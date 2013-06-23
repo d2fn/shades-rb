@@ -1,6 +1,6 @@
 # Shades
 
-Get a new perspective on your data. In-memory [OLAP cubing](en.wikipedia.org/wiki/OLAP_cube) for Ruby.
+Get a new perspective on your data. In-memory [OLAP cubing](en.wikipedia.org/wiki/OLAP_cube), histograms, and more for Ruby.
 
 ## As a command line utility
 

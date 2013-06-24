@@ -45,7 +45,7 @@ jane        6.00
 
 ## As a command line utility for histogramming
 
-Histograms are very useful for understanding the distribution of values in a set of data. Typically it is difficult to pick appropriate bin widths if you don't already have a solid understanding of the data. Shades implements dynamic rebalancing histograms based on [this paper](http://pages.cs.wisc.edu/~donjerko/hist.pdf) so get histograms that that make sense for whatever data you throw at them.
+Histograms are indespensible for understanding the distribution of values in a set of data. Typically it is difficult to pick appropriate bin widths if you don't already have a solid understanding of the data. Shades implements dynamic rebalancing histograms based on [this paper](http://pages.cs.wisc.edu/~donjerko/hist.pdf) so they always make sense for your data set.
 
 Say another file with the same structure as above includes one-minute system load averages as ```load1```
 
@@ -71,12 +71,11 @@ You can even feed data cubing output from above into the ```histo``` utility. Le
 cat transactions.txt | shades -p "sum(amount) by transactionid" | histo amount
 ```
 
-
 ## Use in code
 
 Shades also offers a public OLAP cubing API. See the ```shades``` and ```histo``` utilities for examples of building data cubes and histograms, respectively.
 
 ## Roadmap
 
-- [ ] Add 'where' clauses for filtering
-- [ ] Numerosity bounding of output from ```shades``` by only including the top ranking rows in a set of dimensions.
+- Add 'where' clauses for filtering
+- Numerosity bounding of output from ```shades``` by only including the top ranking rows in a set of dimensions.

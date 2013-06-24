@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.files = `git ls-files`.split("\n")
   s.require_path = 'lib'
   s.require_paths = %w[lib]
-  s.executables = ["shades"]
+  s.executables = ["shades", "histo"]
 
   s.add_development_dependency 'rake-compiler'
   s.add_development_dependency 'rspec'

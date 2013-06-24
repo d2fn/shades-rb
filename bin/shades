@@ -7,9 +7,9 @@ require 'shades'
 def main(parseable_output, q)
 
   events_in = []
-  p = Shades::StreamParser.new { |e|
-      events_in << e
-    }
+  p = Shades::StreamParser.new do |e|
+    events_in << e
+  end
 
   $stdin.each_line do |line|
     p << line

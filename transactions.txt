@@ -1,0 +1,5 @@
+# dimensions: timestamp transactionid customer item
+# measures: quantity amount
+1371958271 1 jack golfclubs  3 75.00
+1371937693 1 jack gin        2 40.00
+1371979661 2 jane jar        6  6.00

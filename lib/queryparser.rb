@@ -7,14 +7,12 @@ module Shades
   class QueryParser
 
     def self.parse(qs)
-      parts = qs.split(/[^a-zA-Z0-9]/)
+      parts = qs.scan(/\w+/)
       tokens = []
       t = BeginRollupToken.new
       parts.each do |p|
-        if !p.empty?
-          t = t.emit(p)
-          tokens << t
-        end
+        t = t.emit(p)
+        tokens << t
       end
       rollups = rollups_pass(tokens)
       categorizations = categorizations_pass(tokens)

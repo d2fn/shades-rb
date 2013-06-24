@@ -1,7 +1,7 @@
 module Shades
 
   ## queries are of the form:
-  ## <stat-type> <measure>[, measure]* by <dimension>[, <dimension>] order by <dimension|measure>[, <dimension|measure>]*
+  ## <stat-type> <measure>[, [<stat-type>] <measure>]* by <dimension>[, <dimension>] order by <dimension|measure>[, <dimension|measure>]*
   ## for example, to get the mean load1, and load5 measures by unique combination of host role and kernel version:
   ##   mean load1, load5 by role, kernelversion
   class QueryParser

@@ -1,0 +1,27 @@
+#!/usr/bin/env ruby
+$: << File.realpath(File.dirname(__FILE__) + "/../lib")
+
+require 'shades'
+
+def main(mkey, max_buckets, output_width)
+  
+  # set up the histogram data to accept streaming input
+  histo = Shades::DynamicHistogram.new(max_buckets)
+  p = Shades::StreamParser.new do |e|
+    histo.add(e.measure(mkey))
+  end
+
+  # stream stdin lines to the parser
+  $stdin.each_line do |line|
+    p << line
+  end
+
+  $stdout.puts histo.ascii_art
+end
+
+measure = ARGV[-1]
+max_buckets = 10
+output_width = 30
+
+main(measure, max_buckets, output_width)
+

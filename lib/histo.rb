@@ -19,7 +19,7 @@ module Shades
     end
 
 
-    def histo_text
+    def ascii_art
       @res.histo_text
     end
   end

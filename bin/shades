@@ -1,0 +1,46 @@
+#!/usr/bin/env ruby
+$: << File.realpath(File.dirname(__FILE__) + "/../lib")
+
+require 'getoptlong'
+require 'shades'
+
+events = []
+p = Shades::StreamParser.new { |e|
+    events << e
+  }
+
+$stdin.each_line do |line|
+  p << line
+end
+
+qs = ARGV[-1]
+q = Shades::QueryParser::parse(qs)
+
+out = q.run(events)
+
+opt_parser = GetoptLong.new
+opt_parser.set_options(["-p", "--parseable", GetoptLong::NO_ARGUMENT])
+
+parseable_output = false
+
+begin
+  begin
+    opt,arg = opt_parser.get_option
+    break if not opt
+    case opt
+      when "-p" || "--parseable"
+        parseable_output = true
+    end
+  rescue => err
+    $stderr.puts err.message
+  end
+end while 1
+
+
+fmt = Shades::Formatter.new(" ")
+if parseable_output
+  fmt.text($stdout, out)
+else
+  fmt.pretty_text($stdout, out)
+end
+

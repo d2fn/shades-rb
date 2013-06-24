@@ -47,7 +47,7 @@ jane        6.00
 
 ## As a command line utility for histogramming
 
-Histograms are indespensible for understanding the distribution of values in a set of data. Typically it is difficult to pick appropriate bin widths if you don't already have a solid understanding of the data. Shades implements dynamic rebalancing histograms based on [this paper](http://pages.cs.wisc.edu/~donjerko/hist.pdf) so they always make sense for your data set.
+Histograms are indespensible for understanding value distributions in a data set--especially distributions with a long tail or heavy skew like response times in computer systems or cost of goods on Amazon. Typically it is difficult to pick appropriate bin widths if you don't already have a solid understanding of the data. Shades implements dynamic rebalancing histograms based on [this paper](http://pages.cs.wisc.edu/~donjerko/hist.pdf) so they always make sense for your data set.
 
 Say another file with the same structure as above includes one-minute system load averages as ```load1```
 

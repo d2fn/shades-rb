@@ -19,7 +19,10 @@ q = Shades::QueryParser::parse(qs)
 out = q.run(events)
 
 opt_parser = GetoptLong.new
-opt_parser.set_options(["-p", "--parseable", GetoptLong::NO_ARGUMENT])
+opt_parser.set_options(
+    # create output that can itself be used as input to this program
+    ["-p", "--parseable", GetoptLong::NO_ARGUMENT]
+  )
 
 parseable_output = false
 
@@ -35,7 +38,6 @@ begin
     $stderr.puts err.message
   end
 end while 1
-
 
 fmt = Shades::Formatter.new(" ")
 if parseable_output

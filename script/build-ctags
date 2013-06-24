@@ -1,0 +1,31 @@
+#!/bin/sh
+#/ Usage: build-ctags [<options>]
+#/ Build tags file in the RAILS_ROOT directory. Any <options> provided are
+#/ passed to ctags.
+#/
+#/ This command requires exuberant ctags to be installed.
+set -e
+
+# show usage message
+if [ "$1" == "--help" ]; then
+    grep ^#/ <"$0" | cut -c4-
+    exit 2
+fi
+
+# change into RAILS_ROOT
+cd "$(dirname "$0")/.."
+
+# check that ctags version is correct
+ctags --version >/dev/null 2>&1 || {
+    echo "ctags not found or too old." 1>&2
+    exit 1
+}
+
+# Run ctags with a bunch of ruby related config
+RUBYALIAS='/.*alias(_method)?[[:space:]]+:([[:alnum:]_=!?]+),?[[:space:]]+:([[:alnum:]_=!]+)/\\2/f/'
+exec ctags -R \
+    --tag-relative=yes \
+    --totals=yes \
+    --extra=+f \
+    --fields=+iaS \
+    --regex-ruby="$RUBYALIAS" "$@"

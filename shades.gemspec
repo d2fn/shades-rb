@@ -9,6 +9,8 @@ Gem::Specification.new do |s|
 
   s.files = `git ls-files`.split("\n")
   s.require_path = 'lib'
+  s.require_paths = %w[lib]
+  s.executables = ["shades"]
 
   s.add_development_dependency 'rake-compiler'
   s.add_development_dependency 'rspec'
@@ -16,9 +18,7 @@ Gem::Specification.new do |s|
 
   s.has_rdoc = true
   s.rdoc_options += ['--title', 'shades', '--line-numbers', '--inline-source', '--main', 'README.md']
-  s.extra_rdoc_files += ['README.md', 'COPYING', 'CHANGELOG', *Dir['lib/**/*.rb']]
-
-  s.extensions = 'ext/mri/extconf.rb'
+  s.extra_rdoc_files += ['README.md', *Dir['lib/**/*.rb']]
 
   s.authors = ["Dietrich Featherston"]
   s.email = "d@d2fn.com"

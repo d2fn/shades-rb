@@ -2,7 +2,7 @@
 
 Get a new perspective on your data. In-memory [OLAP cubing](en.wikipedia.org/wiki/OLAP_cube), histograms, and more for Ruby.
 
-## As a command line utility
+## As a command line utility for OLAP cubing
 
 The ```shades``` utility will accept whitespace-delimited data, one event per line, preceeded by two commented lines describing the dimensions and data within.
 
@@ -43,10 +43,40 @@ jack      115.00
 jane        6.00
 ```
 
+## As a command line utility for histogramming
+
+Histograms are very useful for understanding the distribution of values in a set of data. Typically it is difficult to pick appropriate bin widths if you don't already have a solid understanding of the data. Shades implements dynamic rebalancing histograms based on [this paper](http://pages.cs.wisc.edu/~donjerko/hist.pdf) so get histograms that that make sense for whatever data you throw at them.
+
+Say another file with the same structure as above includes one-minute system load averages as ```load1```
+
+```
+cat hoststats.txt | histo load1
+     0.174 (  7) #######
+     0.805 ( 30) ##############################
+     1.974 ( 11) ###########
+     2.936 ( 10) ##########
+     3.911 (  8) ########
+     5.164 (  5) #####
+     6.744 (  7) #######
+     7.852 (  4) ####
+     9.310 (  1) #
+    20.250 (  1) #
+```
+
+Each of these lines is a histogram bucket with the average value on the left and the number of items in the bucket in parenthesis. So the line ```5.164 (  5) #####``` can be read as "there are 5 values with a mean close to 5.164".
+
+You can even feed data cubing output from above into the ```histo``` utility. Let's say we look back at the customer transaction data from above. To get a sense of the total amount spent over all transactions, you would simply do the following.
+
+```
+cat transactions.txt | shades -p "sum(amount) by transactionid" | histo amount
+```
+
+
 ## Use in code
 
-Shades also offers a public OLAP cubing API.
+Shades also offers a public OLAP cubing API. See the ```shades``` and ```histo``` utilities for examples of building data cubes and histograms, respectively.
 
-```
--- c o m i n g  s o o n --
-```
+## Roadmap
+
+- [ ] Add 'where' clauses for filtering
+- [ ] Numerosity bounding of output from ```shades``` by only including the top ranking rows in a set of dimensions.

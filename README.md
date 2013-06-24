@@ -67,7 +67,7 @@ cat hoststats.txt | histo load1
 
 Each of these lines is a histogram bucket with the average value on the left and the number of items in the bucket in parenthesis. So the line ```5.164 (  5) #####``` can be read as "there are 5 values with a mean close to 5.164".
 
-You can even feed data cubing output from above into the ```histo``` utility. Let's say we look back at the customer transaction data from above. To get a sense of the total amount spent over all transactions, you would simply do the following.
+You can even feed data cubing output from above into the ```histo``` utility. Let's say we look back at the customer transaction data from above. To get a sense of the distribution of transaction amounts, you would simply do the following.
 
 ```
 cat transactions.txt | shades -p "sum(amount) by transactionid" | histo amount

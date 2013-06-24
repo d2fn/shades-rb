@@ -18,7 +18,6 @@ module Shades
       @res.lines
     end
 
-
     def ascii_art
       @res.histo_text
     end

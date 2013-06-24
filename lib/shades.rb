@@ -1,3 +1,4 @@
+require 'model'
 require 'cube'
 require 'histo'
 require 'stats'

@@ -4,19 +4,25 @@ $: << File.realpath(File.dirname(__FILE__) + "/../lib")
 require 'getoptlong'
 require 'shades'
 
-events = []
-p = Shades::StreamParser.new { |e|
-    events << e
-  }
+def main(parseable_output, q)
 
-$stdin.each_line do |line|
-  p << line
+  events_in = []
+  p = Shades::StreamParser.new { |e|
+      events_in << e
+    }
+
+  $stdin.each_line do |line|
+    p << line
+  end
+
+  events_out = q.run(events_in)
+  fmt = Shades::Formatter.new(" ")
+  if parseable_output
+    fmt.text($stdout, events_out)
+  else
+    fmt.pretty_text($stdout, events_out)
+  end
 end
-
-qs = ARGV[-1]
-q = Shades::QueryParser::parse(qs)
-
-out = q.run(events)
 
 opt_parser = GetoptLong.new
 opt_parser.set_options(
@@ -39,10 +45,6 @@ begin
   end
 end while 1
 
-fmt = Shades::Formatter.new(" ")
-if parseable_output
-  fmt.text($stdout, out)
-else
-  fmt.pretty_text($stdout, out)
-end
-
+qs = ARGV[-1]
+q = Shades::QueryParser::parse(qs)
+main(parseable_output, q)

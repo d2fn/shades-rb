@@ -47,22 +47,26 @@ module Shades
         results = aggregator.snapshot
       end
       if !@sorting.nil?
-        @sorting.reverse.each do |s|
-          results.sort! do |a, b|
-            v1 = lookup(a, s[:key])
-            v2 = lookup(b, s[:key])
-            asc = s[:asc]
-            if v1 < v2
-              if asc; -1 else 1 end
-            elsif v2 < v1
-              if asc; 1 else -1 end
-            else
-              0
-            end
-          end
+        results.sort! do |a, b|
+          multicompare(a, b)
         end
       end
       results
+    end
+
+    def multicompare(a, b)
+      c = 0
+      @sorting.each do |s|
+        v1 = lookup(a, s[:key])
+        v2 = lookup(b, s[:key])
+        asc = s[:asc]
+        if v1 < v2
+          c = if asc; -1 else 1 end
+        elsif v2 < v1
+          c = if asc; 1 else -1 end
+        end
+      end
+      c
     end
 
     def lookup(e, k)

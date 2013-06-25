@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'shades'
-  s.version = '0.1'
+  s.version = '0.11'
 
   s.summary = "Get a new perspective on your data. In-memory data cubing of event data for Ruby."
   s.description = <<-EOF
@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
 
   s.authors = ["Dietrich Featherston"]
   s.email = "d@d2fn.com"
-  s.homepage = "http://shades.rubyforge.org"
+  s.homepage = "https://github.com/d2fn/shades-rb"
   s.rubyforge_project = "shades"
   s.license = "MIT"
 end

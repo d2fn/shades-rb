@@ -4,6 +4,12 @@ Get a new perspective on your data. In-memory [OLAP cubing](http://en.wikipedia.
 
 ![](https://dl.dropboxusercontent.com/u/1133314/i/shades.gif)
 
+## Install
+
+```
+gem install shades
+```
+
 ## As a command line utility for OLAP cubing
 
 The ```shades``` utility will accept whitespace-delimited data, one event per line, preceeded by two commented lines describing the dimensions and data within.

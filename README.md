@@ -12,7 +12,7 @@ gem install shades
 
 ## As a command line utility for OLAP cubing
 
-The ```shades``` utility will accept whitespace-delimited data, one event per line, preceeded by two commented lines describing the dimensions and data within.
+The ```shades``` utility will accept whitespace-delimited data, one event per line, preceeded by two commented lines describing the dimensions and measures within.
 
 ```
 # dimensions: timestamp transactionid customer item

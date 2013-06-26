@@ -14,7 +14,7 @@ module Shades
         event = @metadata.parse_event(line, /\s+/)
         @receiver.call(event)
       elsif line.start_with?("#")
-        parts = line.scan(/\w+/)
+        parts = line.scan(/[\w\.]+/)
         if parts[0].eql?("dimensions")
           @dimensions = parts.drop(1)
         elsif parts[0].eql?("measures")

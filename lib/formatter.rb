@@ -4,7 +4,10 @@ module Shades
       @spacer = spacer
     end
     def text(out, events)
-      metadata = events[0].metadata unless events.empty?
+      if events.empty?
+        return
+      end
+      metadata = events[0].metadata
       lines = []
       out.puts "# dimensions: %s" % (metadata.dimensions.join(@spacer))
       out.puts "# measures: %s"   % (metadata.measures.join(@spacer))
@@ -13,7 +16,10 @@ module Shades
       end
     end
     def pretty_text(out, events)
-      metadata = events[0].metadata unless events.empty?
+      if events.empty?
+        return
+      end
+      metadata = events[0].metadata
       lines = []
       (events.length+1).times {|i|lines[i] = []}
       metadata.dimensions.each do |d|

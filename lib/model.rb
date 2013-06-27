@@ -10,15 +10,21 @@ module Shades
     # parse an event line that adheres to this metadat
     def parse_event(line, sep)
       values = line.split(sep)
-      d = {}
-      @dimensions.zip(values.take(@dimensions.length)).each do |k, v|
-        d[k] = v.strip
+      begin
+        d = {}
+        @dimensions.zip(values.take(@dimensions.length)).each do |k, v|
+          d[k] = v.strip
+        end
+        m = {}
+        @measures.zip(values.drop(@dimensions.length)).each do |k, v|
+          m[k] = Float(v.strip)
+        end
+        return Event.new(self, d, m)
+      rescue => err
+        puts err.message
+        puts "line: #{line}"
       end
-      m = {}
-      @measures.zip(values.drop(@dimensions.length)).each do |k, v|
-        m[k] = Float(v.strip)
-      end
-      Event.new(self, d, m)
+      nil
     end
   end
 

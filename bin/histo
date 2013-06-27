@@ -1,27 +1,84 @@
 #!/usr/bin/env ruby
+#/ Usage: histo [options]
+#/ -p <measure> : Parse shades formatted data and histogram a specific measure given as the last argument
+#/ -n <num>     : the max number of bins to include in the output (default = 10)
+#/ -w <width>   : the width of the histogram bars (default = 30)
+#/ -l           : output ascii art on a log scale (default is linear).
+#/              : tip: if the value distribution looks linear using this option then you're dealing with a power law.
+#/ -h           : show this usage
 $: << File.realpath(File.dirname(__FILE__) + "/../lib")
 
 require 'shades'
+require 'getoptlong'
+require 'pathname'
 
-def main(mkey, max_buckets, output_width)
-  
-  # set up the histogram data to accept streaming input
-  histo = Shades::DynamicHistogram.new(max_buckets)
-  p = Shades::StreamParser.new do |e|
-    histo.add(e.measure(mkey))
-  end
-
-  # stream stdin lines to the parser
-  $stdin.each_line do |line|
-    p << line
-  end
-
-  $stdout.puts histo.ascii_art
+def usage
+  program = Pathname.new(__FILE__).realpath
+  help = `grep ^\#\/ #{program} | cut -c4-`
+  puts help
+  exit 1
 end
 
-measure = ARGV[-1]
-max_buckets = 10
-output_width = 30
+def main(mkey, max_bins, ascii_width, log_base)
 
-main(measure, max_buckets, output_width)
+  histo = Shades::DynamicHistogram.new(max_bins)
+
+  if mkey.nil?
+    # just read a stream of numbers from stdin
+    $stdin.each_line do |line|
+      line.scan(/(?:\d+\.?\d*|\d*\.\d+)/).each do |s|
+        begin
+          n = Float(s)
+          histo.add(n)
+        rescue => err
+          puts "error parsing %s as float" % s
+          puts err.message
+        end
+      end
+    end
+  else
+    # set up the histogram data to accept streaming input
+    p = Shades::StreamParser.new do |e|
+      histo.add(e.measure(mkey))
+    end
+
+    # stream stdin lines to the parser
+    $stdin.each_line do |line|
+      p << line
+    end
+  end
+  $stdout.puts histo.ascii_art(ascii_width, log_base)
+end
+
+opts = GetoptLong.new
+opts.set_options(
+  # parse shades formatted data and histogram a specific measure given as the last argument
+  ["-p", "--parse"       , GetoptLong::OPTIONAL_ARGUMENT],
+  ["-n", "--max-bins"    , GetoptLong::OPTIONAL_ARGUMENT],
+  ["-w", "--ascii-width" , GetoptLong::OPTIONAL_ARGUMENT],
+  ["-l", "--log-base"    , GetoptLong::OPTIONAL_ARGUMENT],
+  ["-h", "--help"        , GetoptLong::NO_ARGUMENT],
+)
+
+measure = nil
+max_bins = 10
+ascii_width = 30
+log_base = 0
+
+opts.each do |opt, arg|
+  case opt
+    when '-h'
+      usage
+    when '-p'
+      measure = arg
+    when '-n'
+      max_bins = arg.to_i
+    when '-w'
+      ascii_width = arg.to_i
+    when '-l'
+      log_base = arg.to_i
+  end
+end
+
+main(measure, max_bins, ascii_width, log_base)
 

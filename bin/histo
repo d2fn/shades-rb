@@ -80,5 +80,11 @@ opts.each do |opt, arg|
   end
 end
 
+# if no measure was specified but the last argument is a word, then use
+# that as the measure to parse
+if measure.nil? && ARGV.length > 0 && !ARGV[-1].start_with?("-")
+  measure = ARGV[-1]
+end
+
 main(measure, max_bins, ascii_width, log_base)
 

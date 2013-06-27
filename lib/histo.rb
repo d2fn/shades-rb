@@ -2,7 +2,7 @@
 module Shades
 
   # streaming histograms:
-  # implementation of the clojure library from BigML: https://github.com/bigmlcom/histogram
+  # Ruby port of the Clojure library from BigML: https://github.com/bigmlcom/histogram
   class DynamicHistogram
 
     def initialize(max_size)

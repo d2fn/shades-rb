@@ -12,7 +12,11 @@ module Shades
       line.strip!
       if !@metadata.nil?
         event = @metadata.parse_event(line, /\s+/)
-        @receiver.call(event)
+        if event.nil?
+          puts line
+        else
+          @receiver.call(event)
+        end
       elsif line.start_with?("#")
         parts = line.scan(/[\w\.]+/)
         if parts[0].eql?("dimensions")

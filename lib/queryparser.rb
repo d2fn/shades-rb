@@ -7,7 +7,7 @@ module Shades
   class QueryParser
 
     def self.parse(qs)
-      parts = qs.scan(/\w+/)
+      parts = qs.scan(/[\w\.]+/)
       tokens = []
       t = BeginRollupToken.new
       parts.each do |p|

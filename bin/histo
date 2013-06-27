@@ -3,7 +3,7 @@
 #/ -p <measure> : Parse shades formatted data and histogram a specific measure given as the last argument
 #/ -n <num>     : the max number of bins to include in the output (default = 10)
 #/ -w <width>   : the width of the histogram bars (default = 30)
-#/ -l           : output ascii art on a log scale (default is linear).
+#/ -l <logbase> : output ascii art on a log scale (default is linear).
 #/              : tip: if the value distribution looks linear using this option then you're dealing with a power law.
 #/ -h           : show this usage
 $: << File.realpath(File.dirname(__FILE__) + "/../lib")

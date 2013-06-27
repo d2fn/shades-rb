@@ -18,8 +18,14 @@ module Shades
       @res.lines
     end
 
-    def ascii_art
-      @res.histo_text
+    def ascii_art(output_width, log_base)
+      @res.histo_text(output_width) do |x|
+        if log_base != 0
+          Math::log(x, log_base)
+        else
+          x
+        end
+      end
     end
   end
 
@@ -90,18 +96,23 @@ module Shades
     ##
     ## So, the line above that reads "0.502 ( 27) ##############################"
     ## can be read as: "There are 27 values close to 0.502"
-    def histo_text
+    def histo_text(output_width)
       a = []
       max_bin_count = 1
-      width = 30
       @bins.each do |b|
         if b.count > max_bin_count
           max_bin_count = b.count
         end
       end
+      scaled_max = yield max_bin_count
+      output_width -= 23
+      if output_width < 10
+        output_width = 10
+      end
       @bins.each do |b|
-        repeat = width * Float(b.count)/Float(max_bin_count)
-        a << "%10.3f (%3d) %s" % [b.mean, b.count, '#' * repeat]
+        scaled_value = yield b.count
+        repeat = output_width * ( scaled_value / scaled_max )
+        a << "%14.3f (%5d) %s" % [b.mean, b.count, '#' * repeat]
       end
       a.join("\n")
     end

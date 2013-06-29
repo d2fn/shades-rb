@@ -35,7 +35,7 @@ module Shades
       metadata.measures.each do |m|
         row = 1
         max_value = find_abs_max(m, events) + 1.0
-        vlen = Integer(Math::log10(10*max_value)) + 5
+        vlen = Integer(Math::log10(10*(max_value+1))) + 5
         w = [vlen, m.length].max
         events.each do |e|
           v = e.measure(m)

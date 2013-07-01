@@ -142,6 +142,7 @@ module Shades
       OrderToken.new(s)
     end
     def emit(s)
+      # by
       BeginSortingToken::parse(s)
     end
   end

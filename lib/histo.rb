@@ -105,13 +105,9 @@ module Shades
         end
       end
       scaled_max = yield max_bin_count
-      output_width -= 23
-      if output_width < 10
-        output_width = 10
-      end
       @bins.each do |b|
         scaled_value = yield b.count
-        repeat = output_width * ( scaled_value / scaled_max )
+        repeat = (output_width * ( Float(scaled_value) / Float(scaled_max) )).to_i
         a << "%14.3f (%5d) %s" % [b.mean, b.count, '#' * repeat]
       end
       a.join("\n")

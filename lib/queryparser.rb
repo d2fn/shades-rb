@@ -1,167 +1,96 @@
+require "treetop"
+
 module Shades
-
-  ## queries are of the form:
-  ## <stat-type> <measure>[, [<stat-type>] <measure>]* by <dimension>[, <dimension>] order by <dimension|measure>[, <dimension|measure>]*
-  ## for example, to get the mean load1, and load5 measures by unique combination of host role and kernel version:
-  ##   mean load1, load5 by role, kernelversion
-  class QueryParser
-
-    def self.parse(qs)
-      parts = qs.scan(/[\w\.]+/)
-      tokens = []
-      t = BeginRollupToken.new
-      parts.each do |p|
-        t = t.emit(p)
-        tokens << t
+  module QueryGrammar
+    class QueryNode < Treetop::Runtime::SyntaxNode
+      def rollup_nodes
+        rollup_list.to_a
       end
-      rollups = rollups_pass(tokens)
-      categorizations = categorizations_pass(tokens)
-      sorting = sorting_pass(tokens)
-      Query.new(:categorizations => categorizations, :rollups => rollups, :sorting => sorting)
-    end
 
-    def self.rollups_pass(tokens)
-      stat = nil
-      r = []
-      tokens.each do |t|
-        if t.kind_of? StatTypeToken
-          stat = t.stat
-        elsif t.kind_of? MeasureRefToken
-          r << { :measure => t.text, :stat => stat }
-        end
+      def categorization_nodes
+        categorization_list.to_a
       end
-      r
-    end
 
-    def self.categorizations_pass(tokens)
-      d = []
-      tokens.each do |t|
-        if t.kind_of? DimensionRefToken
-          d << t.text
-        end
-      end
-      d
-    end
-
-    def self.sorting_pass(tokens)
-      s = []
-      tokens.each do |t|
-        if t.kind_of? SortKeyToken
-          s << { :key => t.text, :asc => true }
-        end
-      end
-      s
-    end
-  end
-
-  class Token
-    attr_accessor :text
-    def initialize(s)
-      @text = s
-    end
-    def to_s
-      @text
-    end
-  end
-
-  class BeginRollupToken < Token
-    def initialize
-      super("<begin>")
-    end
-    def emit(s)
-      StatTypeToken::parse(s)
-    end
-  end
-
-  class StatTypeToken < Token
-    attr_accessor :stat
-    def initialize(name, stat)
-      super(name)
-      @stat = stat
-    end
-
-    ## context free parsing of the next token to be called by the prior token
-    def self.parse(s)
-      stat = Stats::StatsType::get(s)
-      if stat.nil?
-        nil
-      else
-        StatTypeToken.new(s, stat)
-      end
-    end
-
-    ## given the next string, parse and return the next token
-    def emit(s)
-      # a measure must always follow a stat
-      MeasureRefToken::parse(s)
-    end
-  end
-
-  class MeasureRefToken < Token
-    def self.parse(s)
-      MeasureRefToken.new(s)
-    end
-    def emit(s)
-      if s.downcase.eql?("by")
-        BeginCategorizationToken::parse(s)
-      else
-        t = StatTypeToken::parse(s)
-        if !t.nil?
-          t
+      def sorting_nodes
+        if optional_sorting.respond_to?(:sorting_list)
+          optional_sorting.sorting_list.to_a
         else
-          MeasureRefToken::parse(s)
+          []
         end
       end
     end
-  end
 
-  class BeginCategorizationToken < Token
-    def self.parse(s)
-      BeginCategorizationToken.new(s)
+    class RollupListNode < Treetop::Runtime::SyntaxNode
+      def to_a
+        [rollup] + rest_rollups.elements.map do |comma_and_rollup|
+          comma_and_rollup.rollup
+        end
+      end
     end
-    def emit(s)
-      DimensionRefToken::parse(s)
-    end
-  end
 
-  class DimensionRefToken < Token
-    def self.parse(s)
-      DimensionRefToken.new(s)
+    class IdentifierListNode < Treetop::Runtime::SyntaxNode
+      def to_a
+        [identifier] + rest_identifiers.elements.map do |comma_and_identifier|
+          comma_and_identifier.identifier
+        end
+      end
     end
-    def emit(s)
-      if s.downcase.eql?("order")
-        OrderToken::parse(s)
-      else
-        DimensionRefToken::parse(s)
+
+    class RollupNode < Treetop::Runtime::SyntaxNode
+      def stat_type_name
+        stat_type.text_value
+      end
+
+      def measure_names
+        measures.to_a.map(&:text_value)
+      end
+    end
+
+    class StatTypeNode < Treetop::Runtime::SyntaxNode
+    end
+
+    class IdentifierNode < Treetop::Runtime::SyntaxNode
+      def name
+        text_value
       end
     end
   end
 
-  class OrderToken < Token
-    def self.parse(s)
-      OrderToken.new(s)
-    end
-    def emit(s)
-      # by
-      BeginSortingToken::parse(s)
-    end
-  end
+  class QueryParser
+    def self.parse(qs, query_factory = Query)
+      @parser_class ||= Treetop.load(File.join(File.dirname(__FILE__), "query.treetop"))
 
-  class BeginSortingToken < Token
-    def self.parse(s)
-      BeginSortingToken.new(s)
-    end
-    def emit(s)
-      SortKeyToken::parse(s)
-    end
-  end
+      parser = @parser_class.new
+      unless query_node = parser.parse(qs)
+        raise ArgumentError, "Cannot parse query at character #{parser.index}"
+      end
 
-  class SortKeyToken < Token
-    def self.parse(s)
-      SortKeyToken.new(s)
+      query_factory.new(
+        :rollups         => rollups_from_nodes(query_node.rollup_nodes),
+        :categorizations => categorizations_from_nodes(query_node.categorization_nodes),
+        :sorting         => sorting_from_nodes(query_node.sorting_nodes)
+      )
     end
-    def emit(s)
-      SortKeyToken::parse(s)
+
+    def self.rollups_from_nodes(nodes)
+      nodes.flat_map { |node|
+        stat = Stats::StatsType.get(node.stat_type_name)
+        node.measure_names.map { |measure_name|
+          { :stat => stat, :measure => measure_name }
+        }
+      }
+    end
+
+    def self.categorizations_from_nodes(nodes)
+      nodes.map { |categorization|
+        categorization.name
+      }
+    end
+
+    def self.sorting_from_nodes(nodes)
+      nodes.map { |sorting|
+        { :key => sorting.name, :asc => true }
+      }
     end
   end
 end

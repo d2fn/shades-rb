@@ -12,6 +12,8 @@ Gem::Specification.new do |s|
   s.require_paths = %w[lib]
   s.executables = ["shades", "histo"]
 
+  s.add_dependency 'treetop', '~> 1.4.14'
+
   s.add_development_dependency 'rake-compiler'
   s.add_development_dependency 'rspec'
   s.add_development_dependency 'rdoc'

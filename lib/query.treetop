@@ -1,0 +1,34 @@
+module Shades
+  grammar QueryGrammar
+    rule query
+      space* rollup_list
+        space* 'by' space* categorization_list:identifier_list
+        optional_sorting:( space* 'order by' space* sorting_list:identifier_list )?
+        space* <QueryNode>
+    end
+
+    rule space
+      [\s]+
+    end
+
+    rule rollup_list
+      rollup rest_rollups:( ',' space* rollup )* <RollupListNode>
+    end
+
+    rule rollup
+      stat_type '(' measures:identifier_list ')' <RollupNode>
+    end
+
+    rule stat_type
+      [\w]+ <StatTypeNode>
+    end
+
+    rule identifier_list
+      identifier rest_identifiers:( ',' space* identifier )* <IdentifierListNode>
+    end
+
+    rule identifier
+      [\w]+ <IdentifierNode>
+    end
+  end
+end

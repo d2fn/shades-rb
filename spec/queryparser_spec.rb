@@ -4,7 +4,7 @@ require 'ostruct'
 module Shades
   describe QueryParser do
     it "parses rollups out of the query expression" do
-      query = QueryParser.parse("sum(amount) by transactionid order by amount", OpenStruct)
+      query = QueryParser.parse("sum(amount) by transactionid", OpenStruct)
 
       expect(query.rollups.length).to eq(1)
       expect(query.rollups[0][:measure]).to eq("amount")
@@ -12,7 +12,7 @@ module Shades
     end
 
     it "parses multiple rollups out of the query expression" do
-      query = QueryParser.parse("sum(amount), max(quantity) by transactionid order by amount", OpenStruct)
+      query = QueryParser.parse("sum(amount), max(quantity) by transactionid", OpenStruct)
 
       expect(query.rollups.length).to eq(2)
       expect(query.rollups[0][:measure]).to eq("amount")
@@ -20,12 +20,12 @@ module Shades
     end
 
     it "parses categorizations out of the query expression" do
-      query = QueryParser.parse("sum(amount) by transactionid order by amount", OpenStruct)
+      query = QueryParser.parse("sum(amount) by transactionid", OpenStruct)
       expect(query.categorizations).to eq(["transactionid"])
     end
 
     it "parses multiple categorizations out of the query expression" do
-      query = QueryParser.parse("sum(amount) by customer, item order by amount", OpenStruct)
+      query = QueryParser.parse("sum(amount) by customer, item", OpenStruct)
       expect(query.categorizations).to eq(["customer", "item"])
     end
 

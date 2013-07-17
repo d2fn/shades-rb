@@ -6,7 +6,7 @@ module Shades
   ##   mean load1, load5 by role, kernelversion
   class QueryParser
 
-    def self.parse(qs)
+    def self.parse(qs, query_factory = Query)
       parts = qs.scan(/[\w\.]+/)
       tokens = []
       t = BeginRollupToken.new
@@ -17,7 +17,7 @@ module Shades
       rollups = rollups_pass(tokens)
       categorizations = categorizations_pass(tokens)
       sorting = sorting_pass(tokens)
-      Query.new(:categorizations => categorizations, :rollups => rollups, :sorting => sorting)
+      query_factory.new(:categorizations => categorizations, :rollups => rollups, :sorting => sorting)
     end
 
     def self.rollups_pass(tokens)

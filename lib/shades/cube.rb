@@ -233,6 +233,25 @@ module Shades
       f << measures.map   { |k| '%.5f' % measure(k) }
       f.join("\t")
     end
+
+    def dimension_map
+      @dvalues
+    end
+
+    def measure_map
+      mm = {}
+      measures.each do |k, v|
+        mm[k] = measure(k)
+      end
+      mm
+    end
+
+    def to_map
+      {
+        :dimensions => @dvalues,
+        :measures => measure_map
+      }
+    end
   end
 
 end

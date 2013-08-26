@@ -4,7 +4,9 @@ $: << File.realpath(File.dirname(__FILE__) + "/../lib")
 require 'getoptlong'
 require 'shades'
 
-def main(parseable_output, q)
+require 'json'
+
+def main(parseable_output, json_output, q)
 
   events_in = []
   p = Shades::StreamParser.new do |e|
@@ -16,21 +18,29 @@ def main(parseable_output, q)
   end
 
   events_out = q.run(events_in)
-  fmt = Shades::Formatter.new(" ")
-  if parseable_output
-    fmt.text($stdout, events_out)
+
+  if json_output
+    puts events_out.map { |e| e.to_map }.to_json
   else
-    fmt.pretty_text($stdout, events_out)
+    fmt = Shades::Formatter.new(" ")
+    if parseable_output
+      fmt.text($stdout, events_out)
+    else
+      fmt.pretty_text($stdout, events_out)
+    end
   end
 end
 
 opt_parser = GetoptLong.new
 opt_parser.set_options(
     # create output that can itself be used as input to this program
-    ["-p", "--parseable", GetoptLong::NO_ARGUMENT]
+    ["-p", "--parseable", GetoptLong::NO_ARGUMENT],
+    # json output
+    ["-j", "--json", GetoptLong::NO_ARGUMENT],
   )
 
 parseable_output = false
+json_output = false
 
 begin
   begin
@@ -39,12 +49,14 @@ begin
     case opt
       when "-p" || "--parseable"
         parseable_output = true
+      when "-j" || "--json"
+        json_output = true
     end
   rescue => err
-    $stderr.puts err.message
+   $stderr.puts err.message
   end
 end while 1
 
 qs = ARGV[-1]
 q = Shades::QueryParser::parse(qs)
-main(parseable_output, q)
+main(parseable_output, json_output, q)

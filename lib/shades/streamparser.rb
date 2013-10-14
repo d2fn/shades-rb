@@ -11,7 +11,7 @@ module Shades
     def <<(line)
       line.strip!
       if !@metadata.nil?
-        event = @metadata.parse_event(line, /\s+/)
+        event = @metadata.parse_event(line, /\t/)
         if event.nil?
           puts line
         else

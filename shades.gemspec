@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'shades'
-  s.version = '0.16'
+  s.version = '0.17'
 
   s.summary = "Get a new perspective on your data. In-memory data cubing of event data for Ruby."
   s.description = <<-EOF
